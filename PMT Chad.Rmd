@@ -1,0 +1,109 @@
+---
+title: "Proxy Means Test - Chad"
+author: "Bill Olander, RBD"
+date: "November 30, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(haven)
+library(knitr)
+library(kableExtra)
+
+
+##Chad
+Chad_2018_EFSA <- read_sav("Chad/Chad_2018_EFSA.sav")
+#combine the two possesion indicators (asked to different members of the household)
+Chad_2018_EFSA <- Chad_2018_EFSA %>% mutate_at(c(161:180), funs(replace(., is.na(.), 0)))
+Chad_2018_EFSA$Houetot <- Chad_2018_EFSA$Houe + Chad_2018_EFSA$Houe1
+Chad_2018_EFSA$Machettetot <- Chad_2018_EFSA$Machette + Chad_2018_EFSA$Machette1
+Chad_2018_EFSA$Brouettetot <- Chad_2018_EFSA$Brouette + Chad_2018_EFSA$Brouette1
+Chad_2018_EFSA$Charrettetot <- Chad_2018_EFSA$Charrette + Chad_2018_EFSA$Charrette1
+Chad_2018_EFSA$Charruetot <- Chad_2018_EFSA$Charrue + Chad_2018_EFSA$Charrue1
+Chad_2018_EFSA$Rateautot <- Chad_2018_EFSA$Rateau + Chad_2018_EFSA$Rateau1
+Chad_2018_EFSA$Arrosoirtot <- Chad_2018_EFSA$Arrosoir + Chad_2018_EFSA$Arrosoir1
+Chad_2018_EFSA$Pellestot <- Chad_2018_EFSA$Pelles + Chad_2018_EFSA$Pelles1
+Chad_2018_EFSA$Piochetot <- Chad_2018_EFSA$Pioche + Chad_2018_EFSA$Pioche1
+#regression of FCS with observable/easy characteristics of the household
+ModelChad1 <- lm(formula = FCS ~ departement + alphabetisation_CM + statut_menage + sexe + toilette +Houetot + Machettetot + Brouettetot + Charrettetot + Charruetot + Rateautot + Arrosoirtot + Pellestot + Piochetot + cuisson, data = Chad_2018_EFSA)
+summary(ModelChad1)
+#regression of key indicators - only keeping statistically significant
+modelChad2 <- lm(formula = FCS ~ departement + alphabetisation_CM  +toilette +Houetot + Machettetot + Brouettetot, data = Chad_2018_EFSA)
+summary(modelChad2)
+#use model2 to predict FCS 
+Chad_2018_EFSA$PMTFCS <- predict(modelChad2)
+#calculates FCG for original data and for PMT FCS
+Chad_2018_EFSA$PMTFCG[Chad_2018_EFSA$PMTFCS <= 21] <- "Poor"
+Chad_2018_EFSA$PMTFCG[Chad_2018_EFSA$PMTFCS > 21 & Chad_2018_EFSA$PMTFCS <= 35] <- "Borderline"
+Chad_2018_EFSA$PMTFCG[Chad_2018_EFSA$PMTFCS > 35] <- "Acceptable"
+Chad_2018_EFSA$FCG[Chad_2018_EFSA$FCS <= 21] <- "Poor"
+Chad_2018_EFSA$FCG[Chad_2018_EFSA$FCS > 21 & Chad_2018_EFSA$FCS <= 35] <- "Borderline"
+Chad_2018_EFSA$FCG[Chad_2018_EFSA$FCS > 35] <- "Acceptable"
+#creates - checks classification 
+table(Chad_2018_EFSA$FCG, Chad_2018_EFSA$PMTFCG)
+#creates quintiles of predicted and actual FCS
+Chad_2018_EFSA <- mutate(Chad_2018_EFSA, FCS_quint = ntile(FCS, 5)) 
+Chad_2018_EFSA <- mutate(Chad_2018_EFSA, PMTFCS_quint = ntile(PMTFCS, 5)) 
+Chad_2018_EFSA$FCS_quint[Chad_2018_EFSA$FCS_quint == 1] <- "Actual FCS Quintile 1"
+Chad_2018_EFSA$FCS_quint[Chad_2018_EFSA$FCS_quint == 2] <- "Actual FCS Quintile 2"
+Chad_2018_EFSA$FCS_quint[Chad_2018_EFSA$FCS_quint == 3] <- "Actual FCS Quintile 3"
+Chad_2018_EFSA$FCS_quint[Chad_2018_EFSA$FCS_quint == 4] <- "Actual FCS Quintile 4"
+Chad_2018_EFSA$FCS_quint[Chad_2018_EFSA$FCS_quint == 5] <- "Actual FCS Quintile 5"
+Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 1] <- "Predicted FCS Quintile 1"
+Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 2] <- "Predicted FCS Quintile 2"
+Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 3] <- "Predicted FCS Quintile 3"
+Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 4] <- "Predicted FCS Quintile 4"
+Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 5] <- "Predicted FCS Quintile 5"
+#creates table and confusion matrix of predicted vs expected 
+tableFCSTCD <- table(as.character(Chad_2018_EFSA$FCS_quint), as.character(Chad_2018_EFSA$PMTFCS_quint))
+my_table_1 <- as.data.frame.matrix(tableFCSTCD) # convert it to dataframe
+table2FCSTCD <- prop.table(tableFCSTCD, 1)
+```
+
+### Key Points
+
+1. Explored "Proxy Means Testing", using assessment data to predict food security indicators using easily observable/verifiable household characteristics for targeting of households
+2. This method, largely fails accurately predict the FCS and Food Expenditures and misclassifies a large number of the food insecure households   
+3. It's unlikely that selecting additional variables will improve the predictive power.  While more complicated methods/models could be explored to improve predictive power, this would defeat the purpose of PMT - which is to provide and easily interpretable method for scoring/categorization of households.
+
+## Methods
+
+Following Proxy Means Tests methods here: https://olc.worldbank.org/sites/default/files/1.pdf , used recent household assessment data for Burkina Faso, Chad, Mali, Niger and Senegal to:
+
+1. Create a multiple linear regression (model) to predict the FCS and Food Expenditures using variables which are easily observable/collectable by enumerators (i.e. type of roof, possession of animals, sex of the head of household)
+2. Using the model, create a predicted FCS/Expenditure for each household 
+3. Create FCS/Expenditure quintiles for predicted and actual FCS/Expenditure scores
+4. To assess accuracy, calculate the inclusion and exclusion error of the poorest 
+
+
+*linear regression model to predict FCS in Chad using easily observable/verifiable household characteristics*
+```{r}
+summary(modelChad2)
+```
+
+##Results
+
+The following table present Actual vs Predicted Food Consumption Quintile Groups for each Country 
+
+####Chad FCS Quintiles (Actual in rows/predicted in columns)
+*52% of the poorest quintile were correctly classified by the prediction*
+```{r echo = FALSE}
+kable(my_table_1) %>% kable_styling() %>% column_spec(1:1, bold = T) %>% footnote(general = "Here is a general comments of the table. ",
+           number = c("Footnote 1; ", "Footnote 2; "),
+           alphabet = c("Footnote A; ", "Footnote B; "),
+           symbol = c("Footnote Symbol 1; ", "Footnote Symbol 2")
+           ) 
+```
+
+## Discussion
+
+As observed in the assesment data for 6 countries, the PMT method fails to accurately  predict/classify a large percentage of households.
+
+Criticism of the approach (http://www.developmentpathways.co.uk/blog/poxy-means-testing-official/, https://www.unicef.org/socialpolicy/files/targeting-poorest.pdf) is it often not understood by beneficiaries and seen as a lottery system. 
+
+Investing in more complicating models and methods for prediction will only lessen the interpretability of methods.  
+
+
