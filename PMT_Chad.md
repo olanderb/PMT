@@ -63,7 +63,7 @@ summary(modelChad2)
 The following table present Actual vs Predicted Food Consumption Quintile Groups for each Country 
 
 ####Chad FCS Quintiles (Actual in rows/predicted in columns)
-*52% of the poorest quintile were correctly classified by the prediction*
+*actual and predicted counts of FCS quintiles*
 <table class="table" style="margin-left: auto; margin-right: auto;">
  <thead>
   <tr>
@@ -117,24 +117,40 @@ The following table present Actual vs Predicted Food Consumption Quintile Groups
    <td style="text-align:right;"> 87 </td>
   </tr>
 </tbody>
+</table>
+
+*actual and predicted counts of FCS quintiles - grouping quintile 1 (poorest) and the rest*
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> predicted other quintiles </th>
+   <th style="text-align:right;"> predicted poorest FCS quintiles </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> actual other quintiles </td>
+   <td style="text-align:right;"> 628 </td>
+   <td style="text-align:right;"> 86 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> actual poorest FCS quintiles </td>
+   <td style="text-align:right;"> 86 </td>
+   <td style="text-align:right;"> 93 </td>
+  </tr>
+</tbody>
 <tfoot>
 <tr><td style="padding: 0; border: 0;" colspan="100%"><span style="font-style: italic;">Note: </span></td></tr>
 <tr><td style="padding: 0; border: 0;" colspan="100%">
-<sup></sup> Here is a general comments of the table. </td></tr>
+<sup></sup> Still figuring out how to calculate sensitivity/specificity directly from 2 X 2 table</td></tr>
 <tr><td style="padding: 0; border: 0;" colspan="100%">
-<sup>1</sup> Footnote 1; </td></tr>
+<sup>1</sup> Sensitivity = 52%; </td></tr>
 <tr><td style="padding: 0; border: 0;" colspan="100%">
-<sup>2</sup> Footnote 2; </td></tr>
-<tr><td style="padding: 0; border: 0;" colspan="100%">
-<sup>a</sup> Footnote A; </td></tr>
-<tr><td style="padding: 0; border: 0;" colspan="100%">
-<sup>b</sup> Footnote B; </td></tr>
-<tr><td style="padding: 0; border: 0;" colspan="100%">
-<sup>*</sup> Footnote Symbol 1; </td></tr>
-<tr><td style="padding: 0; border: 0;" colspan="100%">
-<sup>†</sup> Footnote Symbol 2</td></tr>
+<sup>2</sup> Specificity 87%; </td></tr>
 </tfoot>
 </table>
+
 
 ## Discussion
 

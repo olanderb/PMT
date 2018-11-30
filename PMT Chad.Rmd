@@ -59,10 +59,13 @@ Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 2] <- "Predicted FCS 
 Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 3] <- "Predicted FCS Quintile 3"
 Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 4] <- "Predicted FCS Quintile 4"
 Chad_2018_EFSA$PMTFCS_quint[Chad_2018_EFSA$PMTFCS_quint == 5] <- "Predicted FCS Quintile 5"
-#creates table and confusion matrix of predicted vs expected 
+#creates tables of count of actual vs predicted  FCS quintiles
 tableFCSTCD <- table(as.character(Chad_2018_EFSA$FCS_quint), as.character(Chad_2018_EFSA$PMTFCS_quint))
 my_table_1 <- as.data.frame.matrix(tableFCSTCD) # convert it to dataframe
-table2FCSTCD <- prop.table(tableFCSTCD, 1)
+Chad_2018_EFSA$FCSpoor <- ifelse(Chad_2018_EFSA$FCS_quint == "Actual FCS Quintile 1", "actual poorest FCS quintiles", "actual other quintiles")
+Chad_2018_EFSA$PMTFCSpoor <- ifelse(Chad_2018_EFSA$PMTFCS_quint == "Predicted FCS Quintile 1", "predicted poorest FCS quintiles", "predicted other quintiles")
+tablenew <- table(Chad_2018_EFSA$FCSpoor, Chad_2018_EFSA$PMTFCSpoor)
+my_table_2 <- as.data.frame.matrix(tablenew) # convert it to dataframe
 ```
 
 ### Key Points
@@ -91,14 +94,18 @@ summary(modelChad2)
 The following table present Actual vs Predicted Food Consumption Quintile Groups for each Country 
 
 ####Chad FCS Quintiles (Actual in rows/predicted in columns)
-*52% of the poorest quintile were correctly classified by the prediction*
+*actual and predicted counts of FCS quintiles*
 ```{r echo = FALSE}
-kable(my_table_1) %>% kable_styling() %>% column_spec(1:1, bold = T) %>% footnote(general = "Here is a general comments of the table. ",
-           number = c("Footnote 1; ", "Footnote 2; "),
-           alphabet = c("Footnote A; ", "Footnote B; "),
-           symbol = c("Footnote Symbol 1; ", "Footnote Symbol 2")
-           ) 
+kable(my_table_1) %>% kable_styling() %>% column_spec(1:1, bold = T) 
 ```
+
+*actual and predicted counts of FCS quintiles - grouping quintile 1 (poorest) and the rest*
+```{r echo = FALSE}
+kable(my_table_2) %>% kable_styling() %>% column_spec(1:1, bold = T) %>% footnote(general = "Still figuring out how to calculate sensitivity/specificity directly from 2 X 2 table",
+           number = c("Sensitivity = 52%; ", "Specificity 87%; "))
+          
+```
+
 
 ## Discussion
 
