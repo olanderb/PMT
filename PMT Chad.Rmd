@@ -2,7 +2,9 @@
 title: "Proxy Means Test - Chad"
 author: "Bill Olander, RBD"
 date: "November 30, 2018"
-output: html_document
+output: 
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
